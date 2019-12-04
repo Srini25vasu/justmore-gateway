@@ -11,18 +11,15 @@ public class JustmehrGatewayConfig {
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
 		
+		
 		return builder.routes()
-				    .route("r1",r->r.host("localhost")
-				    		.and()
-				    		.path("/api/courses")
-				    		.uri("http://localhost/api/courses"))
-				    .route(r -> r.host("**.baeldung.com")
-				            .and()
-				            .path("/myOtherRouting")
-				            .filters(f -> f.prefixPath("/myPrefix"))
-				            .uri("http://othersite.com")
-				            .id("myOtherID"))
+				.route(r->r.path("/api/courses/**")
+						.filters(f->f.rewritePath("/api/courses?page=0&&size=3", "${remains}")
+								.addRequestHeader("x-first-header", "first-service-header"))
+						.uri("lb://JUSTMEHR-COURSE-SERVICE")
+						.id("justmehr-course-service"))
 				.build();
+				
 				  
 		
 	}
